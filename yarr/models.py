@@ -4,11 +4,16 @@ import time
 from django.core.mail import mail_admins
 from django.db import models
 
+import socket
+
 import bleach
 import feedparser
 # ++ TODO: tags
 
 from yarr import settings
+
+
+socket.setdefaulttimeout(30)
 
 
 class FeedError(Exception): pass
@@ -154,7 +159,7 @@ class Feed(models.Model):
             # Log url
             if url_history is None:
                 url_history = []
-            url_history.push(self.feed_url)
+            url_history.append(self.feed_url)
             
             # Avoid circular redirection
             self.feed_url = d.get('href', self.feed_url)
@@ -163,8 +168,9 @@ class Feed(models.Model):
             
             # Update feed and try again
             self.save()
-            return self._parse_feed(url_history)
-        
+            # return self._parse_feed(url_history)
+            return self._fetch_feed(url_history)
+
         # Feed gone
         if status == 410:
             raise FeedError('Feed has gone')
@@ -198,6 +204,8 @@ class Feed(models.Model):
         
         if feed is None:
             return
+
+        print "Feed: " + str(feed)
         
         # Try to find the updated time
         updated = feed.get(
@@ -219,12 +227,15 @@ class Feed(models.Model):
         # If no feed pub date found, use latest entry
         if not updated:
             updated = latest
-            
+
         # Update any feed fields
+        title = feed['title'] if 'title' in feed else ''
+        site_url = feed['link'] if 'link' in feed else ''
+
         changed = self._update_attrs(
-            title       = feed['title'],
-            site_url    = feed['link'],
-            last_updated = updated,
+            title=title,
+            site_url=site_url,
+            last_updated=updated,
         )
         if changed:
             self.save()
