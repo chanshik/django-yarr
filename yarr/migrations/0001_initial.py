@@ -12,8 +12,8 @@ class Migration(SchemaMigration):
         db.create_table('yarr_feed', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('feed_url', self.gf('django.db.models.fields.URLField')(max_length=200)),
-            ('site_url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
+            ('feed_url', self.gf('django.db.models.fields.URLField')(max_length=1024)),
+            ('site_url', self.gf('django.db.models.fields.URLField')(max_length=1024, blank=True)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('added', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
@@ -35,8 +35,8 @@ class Migration(SchemaMigration):
             ('content', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('date', self.gf('django.db.models.fields.DateTimeField')()),
             ('author', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-            ('comments_url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
+            ('url', self.gf('django.db.models.fields.URLField')(max_length=1024, blank=True)),
+            ('comments_url', self.gf('django.db.models.fields.URLField')(max_length=1024, blank=True)),
             ('guid', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
         ))
         db.send_create_signal('yarr', ['Entry'])
@@ -90,7 +90,7 @@ class Migration(SchemaMigration):
         'yarr.entry': {
             'Meta': {'ordering': "('-date',)", 'object_name': 'Entry'},
             'author': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'comments_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
+            'comments_url': ('django.db.models.fields.URLField', [], {'max_length': '1024', 'blank': 'True'}),
             'content': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'date': ('django.db.models.fields.DateTimeField', [], {}),
             'feed': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'entries'", 'to': "orm['yarr.Feed']"}),
@@ -99,20 +99,20 @@ class Migration(SchemaMigration):
             'read': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'saved': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'})
+            'url': ('django.db.models.fields.URLField', [], {'max_length': '1024', 'blank': 'True'})
         },
         'yarr.feed': {
             'Meta': {'ordering': "('title', 'added')", 'object_name': 'Feed'},
             'added': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'check_frequency': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'error': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'feed_url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
+            'feed_url': ('django.db.models.fields.URLField', [], {'max_length': '1024'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'last_checked': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'last_updated': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'next_check': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'site_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
+            'site_url': ('django.db.models.fields.URLField', [], {'max_length': '1024', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         }
