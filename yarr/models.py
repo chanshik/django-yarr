@@ -1,5 +1,7 @@
 import datetime
 import time
+import sys
+from urllib2 import URLError
 
 from django.core.mail import mail_admins
 from django.db import models
@@ -135,7 +137,13 @@ class Feed(models.Model):
         """
         # Request and parse the feed, and get status
         d = feedparser.parse(self.feed_url)
-        status = d.get('status', 200)
+
+        # Check 'bozo', 'bozo_exception'.
+        # d['bozo_exception'] is URLError caused by socket timeout.
+        if 'bozo' in d and d['bozo'] == 1 and isinstance(d['bozo_exception'], URLError):
+            return None, None
+
+        status = d.get('status', 404)
         
         # Accepted status:
         #   200 OK
@@ -194,19 +202,31 @@ class Feed(models.Model):
         )
         
         # Fetch feed
+        print 'Feed Updating: ' + self.feed_url,
+        sys.stdout.flush()
+
         try:
             feed, entries = self._fetch_feed()
         except FeedError, e:
             self.is_active = False
             self.error = str(e)
             self.save()
-            return
-        
-        if feed is None:
+            print '-- Failed'
             return
 
-        print "Feed: " + str(feed)
-        
+        except RuntimeError, e:
+            self.is_active = False
+            self.error = str(e)
+            self.save()
+            print '-- Failed'
+            return
+
+        if feed is None:
+            print '-- Failed'
+            return
+
+        print '-- OK'
+
         # Try to find the updated time
         updated = feed.get(
             'updated_parsed',
